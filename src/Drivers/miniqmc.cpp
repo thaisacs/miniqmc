@@ -146,6 +146,13 @@ TimerNameList_t<MiniQMCTimers> MiniQMCTimerNames = {
     {Timer_Setup, "Setup"},
 };
 
+extern "C" {
+  void init_timestep_();
+  void exit_timestep_();
+  void begin_timestep_();
+  void end_timestep_();
+}
+
 void print_help()
 {
   // clang-format off
@@ -208,6 +215,8 @@ int main(int argc, char** argv)
 
   bool verbose                 = false;
   std::string timer_level_name = "fine";
+
+  init_timestep_();
 
   if (!comm.root())
   {
@@ -405,6 +414,7 @@ int main(int argc, char** argv)
   int my_accepted = 0;
   for (int mc = 0; mc < nsteps; ++mc)
   {
+    begin_timestep_();
     #pragma omp parallel for reduction(+:my_accepted)
     for (int iw = 0; iw < nmovers; iw++)
     {
@@ -496,6 +506,7 @@ int main(int argc, char** argv)
 
     } // end of mover loop
 
+    end_timestep_();
   } // nsteps
   Timers[Timer_Total]->stop();
 
@@ -549,6 +560,7 @@ int main(int argc, char** argv)
         "info_" + std::to_string(na) + "_" + std::to_string(nb) + "_" + std::to_string(nc) + ".xml";
     doc.SaveFile(info_name.c_str());
   }
+  exit_timestep_();
 
   return 0;
 }

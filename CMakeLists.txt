@@ -10,6 +10,11 @@ cmake_policy(SET CMP0025 NEW)
 ######################################################################
 PROJECT(miniqmc CXX)
 ######################################################################
+SET(OBJS
+  ${CMAKE_CURRENT_SOURCE_DIR}/../kernel_stats/kernel_stats.o
+)
+#add_library(kernel_stats OBJECT IMPORTED GLOBAL)
+#set_property(TARGET kernel_stats PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../kernel_stats/kernel_stats.o)
 
 ######################################################################
 # Version
@@ -172,7 +177,7 @@ IF(CMAKE_TOOLCHAIN_FILE)
   MESSAGE(STATUS "Using ${CMAKE_TOOLCHAIN_FILE} toolchain ")
 ELSE(CMAKE_TOOLCHAIN_FILE)
   MESSAGE(STATUS "Trying to figure out .....")
-  SET(ENABLE_OPENMP 0)
+    SET(ENABLE_OPENMP 0)
 
   ######################################################
   # Try to identify CPU identity
