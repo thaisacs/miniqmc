@@ -12,7 +12,7 @@
 SET(DRIVERS check_spo check_wfc miniqmc miniqmc_sync_move)
 
 FOREACH(p ${DRIVERS})
-  ADD_EXECUTABLE( ${p}  ${p}.cpp)
+  ADD_EXECUTABLE( ${p}  ${p}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../../kernel_stats/kernel_stats.o)
   TARGET_LINK_LIBRARIES(${p} qmcwfs qmcbase qmcutil ${QMC_UTIL_LIBS})
 ENDFOREACH(p ${ESTEST})
 

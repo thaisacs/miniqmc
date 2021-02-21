@@ -121,6 +121,13 @@
 using namespace std;
 using namespace qmcplusplus;
 
+extern "C" {
+  void init_timestep_();
+  void exit_timestep_();
+  void begin_timestep_();
+  void end_timestep_();
+}
+
 enum MiniQMCTimers
 {
   Timer_Total,
@@ -145,13 +152,6 @@ TimerNameList_t<MiniQMCTimers> MiniQMCTimerNames = {
     {Timer_Update, "Update"},
     {Timer_Setup, "Setup"},
 };
-
-extern "C" {
-  void init_timestep_();
-  void exit_timestep_();
-  void begin_timestep_();
-  void end_timestep_();
-}
 
 void print_help()
 {
@@ -415,7 +415,9 @@ int main(int argc, char** argv)
   for (int mc = 0; mc < nsteps; ++mc)
   {
     begin_timestep_();
+
     #pragma omp parallel for reduction(+:my_accepted)
+
     for (int iw = 0; iw < nmovers; iw++)
     {
       auto& els          = mover_list[iw]->els;
@@ -431,6 +433,7 @@ int main(int argc, char** argv)
       Timers[Timer_Diffusion]->start();
       for (int l = 0; l < nsubsteps; ++l) // drift-and-diffusion
       {
+        begin_timestep_();
         random_th.generate_uniform(ur.data(), nels);
         random_th.generate_normal(&delta[0][0], nels3);
         for (int iel = 0; iel < nels; ++iel)
@@ -560,6 +563,7 @@ int main(int argc, char** argv)
         "info_" + std::to_string(na) + "_" + std::to_string(nb) + "_" + std::to_string(nc) + ".xml";
     doc.SaveFile(info_name.c_str());
   }
+
   exit_timestep_();
 
   return 0;
