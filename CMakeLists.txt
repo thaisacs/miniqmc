@@ -184,7 +184,7 @@ IF(CMAKE_TOOLCHAIN_FILE)
 ELSE(CMAKE_TOOLCHAIN_FILE)
   MESSAGE(STATUS "Trying to figure out .....")
   SET(ENABLE_OPENMP 0)
-  SET(HAVE_MPI 0)
+  SET(HAVE_MPI 1)
   SET(INTEL_COMPILER 0)
   SET(HAVE_MKL 0)
   SET(HAVE_MKL_VML 0)
@@ -385,7 +385,7 @@ ENDIF()
 IF (BUILD_AFQMC AND NOT APPLE)
   LINK_LIBRARIES("rt")
 ENDIF()
-  
+
 # setup ctest variables
 IF ( HAVE_MPI )
   SET( USE_MPI 1 )
@@ -414,11 +414,14 @@ INCLUDE(${CMAKE_ROOT}/Modules/FindThreads.cmake)
 ####################################################################
 # list of libraries to be linked with the main applications using I/O
 
+SET(PI_LIB ${CMAKE_BINARY_DIR}/../../../utils/kernel_stats.o)
+
 SET(QMC_UTIL_LIBS ${LAPACK_LIBRARY} ${BLAS_LIBRARY})
 SET(QMC_UTIL_LIBS ${QMC_UTIL_LIBS} ${FORTRAN_LIBRARIES})
+SET(QMC_UTIL_LIBS ${QMC_UTIL_LIBS} ${PI_LIB})
 
 #find_package(ZLIB)
-   
+
 #set(HDF5_USE_STATIC_LIBRARIES off)
 #if(QMC_BUILD_STATIC)
 #  set(HDF5_USE_STATIC_LIBRARIES on)

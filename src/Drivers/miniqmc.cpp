@@ -121,6 +121,13 @@
 using namespace std;
 using namespace qmcplusplus;
 
+extern "C" {
+  void init_timestep_();
+  void begin_timestep_();
+  void end_timestep_();
+  void exit_timestep_();
+}
+
 enum MiniQMCTimers
 {
   Timer_Total,
@@ -171,6 +178,7 @@ void print_help()
 
 int main(int argc, char** argv)
 {
+  init_timestep_();
   // clang-format off
   typedef QMCTraits::RealType           RealType;
   typedef ParticleSet::ParticlePos_t    ParticlePos_t;
@@ -411,6 +419,7 @@ int main(int argc, char** argv)
     int my_accepted = 0;
     for (int mc = 0; mc < nsteps; ++mc)
     {
+      begin_timestep_();
       Timers[Timer_Diffusion]->start();
       for (int l = 0; l < nsubsteps; ++l) // drift-and-diffusion
       {
@@ -495,6 +504,7 @@ int main(int argc, char** argv)
       }
       Timers[Timer_ECP]->stop();
 
+      end_timestep_();
     } // nsteps
 
   } // end of mover loop
@@ -541,6 +551,7 @@ int main(int argc, char** argv)
         "info_" + std::to_string(na) + "_" + std::to_string(nb) + "_" + std::to_string(nc) + ".xml";
     doc.SaveFile(info_name.c_str());
   }
+  exit_timestep_();
 
   return 0;
 }
